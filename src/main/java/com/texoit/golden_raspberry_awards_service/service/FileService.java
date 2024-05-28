@@ -1,7 +1,11 @@
 package com.texoit.golden_raspberry_awards_service.service;
 
 import com.texoit.golden_raspberry_awards_service.entity.Movie;
+import com.texoit.golden_raspberry_awards_service.entity.Producer;
+import com.texoit.golden_raspberry_awards_service.entity.Studios;
 import com.texoit.golden_raspberry_awards_service.repository.MovieRepository;
+import com.texoit.golden_raspberry_awards_service.repository.ProducerRepository;
+import com.texoit.golden_raspberry_awards_service.repository.StudiosRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,12 @@ import java.util.List;
 public class FileService {
 
     @Autowired
+    private StudiosRepository studiosRepository;
+
+    @Autowired
+    private ProducerRepository producerRepository;
+
+    @Autowired
     private MovieRepository movieRepository;
 
     private static final String FILE_PATH = "src/main/resources/csvfiles/";
@@ -25,12 +35,8 @@ public class FileService {
     @PostConstruct
     private void fileHandle() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(FILE_PATH + "movielist.csv"));
-
         List<List<String>> records = readFile(br);
-
-        List<Movie> movies = createMovies(records);
-
-        saveMovies(movies);
+        createAndSaveEntities(records);
     }
 
     public List<List<String>> readFile(BufferedReader br) throws IOException {
@@ -45,10 +51,12 @@ public class FileService {
         return records;
     }
 
-    public List<Movie> createMovies(List<List<String>> records) {
+    public List<Movie> createAndSaveEntities(List<List<String>> records) {
         List<Movie> movies = new ArrayList<>();
         for (List<String> record : records) {
             if (!record.get(0).equals("year")) {
+                Studios studios = new Studios();
+                Producer producer = new Producer();
                 Movie movie = new Movie();
                 for (int i = 0; i < record.size(); i++) {
                     if (i == 0) {
@@ -56,9 +64,9 @@ public class FileService {
                     } else if (i == 1) {
                         movie.setTitle(record.get(i));
                     } else if (i == 2) {
-                        movie.setStudios(record.get(i));
+                        studios.setName(record.get(i));
                     } else if (i == 3) {
-                        movie.setProducers(record.get(i));
+                        producer.setName(record.get(i));
                     } else if (i == 4) {
                         if (record.get(i).equals("yes")) {
                             movie.setWinner(true);
@@ -67,14 +75,33 @@ public class FileService {
                         }
                     }
                 }
-                movies.add(movie);
+                setStudios(studios, movie);
+                setProducer(producer, movie);
+
+                movieRepository.save(movie);
             }
         }
 
         return movies;
     }
 
-    public void saveMovies(List<Movie> movies) {
-        movies.forEach(movie -> movieRepository.save(movie));
+    private void setStudios(Studios studios, Movie movie) {
+        List<Studios> studiosFromDb = studiosRepository.findByName(studios.getName());
+        if (studiosFromDb.size() != 0) {
+            movie.setStudios(studiosFromDb.stream().findFirst().get());
+        } else {
+            studiosRepository.save(studios);
+            movie.setStudios(studios);
+        }
+    }
+
+    private void setProducer(Producer producer, Movie movie) {
+        List<Producer> producersFromDb = producerRepository.findByName(producer.getName());
+        if (producersFromDb.size() != 0) {
+            movie.setProducer(producersFromDb.stream().findFirst().get());
+        } else {
+            producerRepository.save(producer);
+            movie.setProducer(producer);
+        }
     }
 }

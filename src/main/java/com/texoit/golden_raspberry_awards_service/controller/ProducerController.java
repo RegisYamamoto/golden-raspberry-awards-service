@@ -2,6 +2,7 @@ package com.texoit.golden_raspberry_awards_service.controller;
 
 import com.texoit.golden_raspberry_awards_service.controller.dto.ProducerDto;
 import com.texoit.golden_raspberry_awards_service.entity.Movie;
+import com.texoit.golden_raspberry_awards_service.repository.MovieRepository;
 import com.texoit.golden_raspberry_awards_service.service.ProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,11 +20,20 @@ public class ProducerController {
     @Autowired
     private ProducerService producerService;
 
+    @Autowired
+    private MovieRepository movieRepository;
+
     @GetMapping(value = "/consecutive-awards")
     public ResponseEntity<ProducerDto> getProducerWithTheLongestAndShortestGapBetweenTwoConsecutiveAwards() {
         ProducerDto producerDto = new ProducerDto();
         producerDto.setMin(1L);
 
         return ResponseEntity.status(HttpStatus.OK).body(producerDto);
+    }
+
+    @GetMapping(value = "/test")
+    public ResponseEntity<List<Movie>> test() {
+        List<Movie> all = movieRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(all);
     }
 }
