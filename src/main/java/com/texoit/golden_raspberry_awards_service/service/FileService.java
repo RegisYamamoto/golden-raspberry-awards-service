@@ -22,10 +22,8 @@ public class FileService {
 
     @Autowired
     private StudiosRepository studiosRepository;
-
     @Autowired
     private ProducerRepository producerRepository;
-
     @Autowired
     private MovieRepository movieRepository;
 
