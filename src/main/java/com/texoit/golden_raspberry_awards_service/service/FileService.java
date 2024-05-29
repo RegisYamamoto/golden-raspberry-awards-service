@@ -22,8 +22,10 @@ public class FileService {
 
     @Autowired
     private StudiosRepository studiosRepository;
+
     @Autowired
     private ProducerRepository producerRepository;
+
     @Autowired
     private MovieRepository movieRepository;
 
@@ -32,16 +34,17 @@ public class FileService {
 
     @PostConstruct
     private void fileHandle() throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(FILE_PATH + "movielist.csv"));
-        List<List<String>> records = readFile(br);
-        createAndSaveEntities(records);
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH + "movielist.csv"))) {
+            List<List<String>> records = readFile(br);
+            createAndSaveEntities(records);
+        }
     }
 
     public List<List<String>> readFile(BufferedReader br) throws IOException {
         List<List<String>> records = new ArrayList<>();
         String line;
 
-        while((line = br.readLine()) != null) {
+        while ((line = br.readLine()) != null) {
             String[] values = line.split(COMMA_DELIMITER);
             records.add(Arrays.asList(values));
         }
@@ -49,57 +52,44 @@ public class FileService {
         return records;
     }
 
-    public List<Movie> createAndSaveEntities(List<List<String>> records) {
-        List<Movie> movies = new ArrayList<>();
-        for (List<String> record : records) {
-            if (!record.get(0).equals("year")) {
-                Studios studios = new Studios();
-                Producer producer = new Producer();
-                Movie movie = new Movie();
-                for (int i = 0; i < record.size(); i++) {
-                    if (i == 0) {
-                        movie.setReleaseYear(Integer.parseInt(record.get(i)));
-                    } else if (i == 1) {
-                        movie.setTitle(record.get(i));
-                    } else if (i == 2) {
-                        studios.setName(record.get(i));
-                    } else if (i == 3) {
-                        producer.setName(record.get(i));
-                    } else if (i == 4) {
-                        if (record.get(i).equals("yes")) {
-                            movie.setWinner(true);
-                        } else {
-                            movie.setWinner(false);
-                        }
-                    }
-                }
-                setStudios(studios, movie);
-                setProducer(producer, movie);
-
-                movieRepository.save(movie);
-            }
-        }
-
-        return movies;
+    public void createAndSaveEntities(List<List<String>> records) {
+        records.stream()
+                .skip(1) // Skip header row
+                .map(this::createMovieFromRecord)
+                .forEach(movieRepository::save);
     }
 
-    private void setStudios(Studios studios, Movie movie) {
-        List<Studios> studiosFromDb = studiosRepository.findByName(studios.getName());
-        if (studiosFromDb.size() != 0) {
-            movie.setStudios(studiosFromDb.stream().findFirst().get());
-        } else {
-            studiosRepository.save(studios);
-            movie.setStudios(studios);
+    private Movie createMovieFromRecord(List<String> record) {
+        Movie movie = new Movie();
+        movie.setReleaseYear(Integer.parseInt(record.get(0)));
+        movie.setTitle(record.get(1));
+
+        Studios studios = new Studios();
+        studios.setName(record.get(2));
+        movie.setStudios(getOrCreateStudios(studios));
+
+        Producer producer = new Producer();
+        producer.setName(record.get(3));
+        movie.setProducer(getOrCreateProducer(producer));
+
+        if (record.size() >= 5) {
+            movie.setWinner("yes".equalsIgnoreCase(record.get(4)));
         }
+
+        return movie;
     }
 
-    private void setProducer(Producer producer, Movie movie) {
-        List<Producer> producersFromDb = producerRepository.findByName(producer.getName());
-        if (producersFromDb.size() != 0) {
-            movie.setProducer(producersFromDb.stream().findFirst().get());
-        } else {
-            producerRepository.save(producer);
-            movie.setProducer(producer);
-        }
+    private Studios getOrCreateStudios(Studios studios) {
+        return studiosRepository.findByName(studios.getName())
+                .stream()
+                .findFirst()
+                .orElseGet(() -> studiosRepository.save(studios));
+    }
+
+    private Producer getOrCreateProducer(Producer producer) {
+        return producerRepository.findByName(producer.getName())
+                .stream()
+                .findFirst()
+                .orElseGet(() -> producerRepository.save(producer));
     }
 }
