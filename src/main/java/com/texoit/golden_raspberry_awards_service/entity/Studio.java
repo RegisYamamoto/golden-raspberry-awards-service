@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "studio", uniqueConstraints={@UniqueConstraint(columnNames={"id", "name"})})
-public class Studios {
+public class Studio {
 
     @Id
     @Column(name = "id")

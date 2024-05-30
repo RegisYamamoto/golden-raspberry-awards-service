@@ -2,7 +2,7 @@ package com.texoit.golden_raspberry_awards_service.service;
 
 import com.texoit.golden_raspberry_awards_service.entity.Movie;
 import com.texoit.golden_raspberry_awards_service.entity.Producer;
-import com.texoit.golden_raspberry_awards_service.entity.Studios;
+import com.texoit.golden_raspberry_awards_service.entity.Studio;
 import com.texoit.golden_raspberry_awards_service.repository.MovieRepository;
 import com.texoit.golden_raspberry_awards_service.repository.ProducerRepository;
 import com.texoit.golden_raspberry_awards_service.repository.StudiosRepository;
@@ -66,12 +66,12 @@ public class FileService {
         movie.setTitle(record.get(1));
 
         // Create studios
-        List<Studios> studios = parseStudios(record.get(2));
+        List<Studio> studios = parseStudios(record.get(2));
         movie.setStudios(studios);
 
         // Create producer
         List<Producer> producers = parseProducers(record.get(3));
-        movie.setProducer(producers);
+        movie.setProducers(producers);
 
         if (record.size() >= 5) {
             movie.setWinner("yes".equalsIgnoreCase(record.get(4)));
@@ -91,22 +91,22 @@ public class FileService {
                 .collect(Collectors.toList());
     }
 
-    private List<Studios> parseStudios(String studiosRecord) {
+    private List<Studio> parseStudios(String studiosRecord) {
         return Arrays.stream(studiosRecord.split("\\band\\b|,"))
                 .map(String::trim)
                 .map(name -> {
-                    Studios studios = new Studios();
-                    studios.setName(name);
-                    return getOrCreateStudios(studios);
+                    Studio studio = new Studio();
+                    studio.setName(name);
+                    return getOrCreateStudios(studio);
                 })
                 .collect(Collectors.toList());
     }
 
-    private Studios getOrCreateStudios(Studios studios) {
-        return studiosRepository.findByName(studios.getName())
+    private Studio getOrCreateStudios(Studio studio) {
+        return studiosRepository.findByName(studio.getName())
                 .stream()
                 .findFirst()
-                .orElseGet(() -> studiosRepository.save(studios));
+                .orElseGet(() -> studiosRepository.save(studio));
     }
 
     private Producer getOrCreateProducer(Producer producer) {

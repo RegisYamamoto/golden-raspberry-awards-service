@@ -28,7 +28,7 @@ public class Movie {
     private String title;
 
     @ManyToMany
-    private List<Studios> studios;
+    private List<Studio> studios;
 
     @ManyToMany
     private List<Producer> producers;
