@@ -5,9 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -25,11 +27,11 @@ public class Movie {
     @Column(name = "title")
     private String title;
 
-    @ManyToOne
-    private Studios studios;
+    @ManyToMany
+    private List<Studios> studios;
 
-    @ManyToOne
-    private Producer producer;
+    @ManyToMany
+    private List<Producer> producer;
 
     @Column(name = "winner")
     private boolean winner;

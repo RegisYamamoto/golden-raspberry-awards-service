@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FileService {
@@ -64,19 +65,41 @@ public class FileService {
         movie.setReleaseYear(Integer.parseInt(record.get(0)));
         movie.setTitle(record.get(1));
 
-        Studios studios = new Studios();
-        studios.setName(record.get(2));
-        movie.setStudios(getOrCreateStudios(studios));
+        // Create studios
+        List<Studios> studios = parseStudios(record.get(2));
+        movie.setStudios(studios);
 
-        Producer producer = new Producer();
-        producer.setName(record.get(3));
-        movie.setProducer(getOrCreateProducer(producer));
+        // Create producer
+        List<Producer> producers = parseProducers(record.get(3));
+        movie.setProducer(producers);
 
         if (record.size() >= 5) {
             movie.setWinner("yes".equalsIgnoreCase(record.get(4)));
         }
 
         return movie;
+    }
+
+    private List<Producer> parseProducers(String producersRecord) {
+        return Arrays.stream(producersRecord.split("\\band\\b|,"))
+                .map(String::trim)
+                .map(name -> {
+                    Producer producer = new Producer();
+                    producer.setName(name);
+                    return getOrCreateProducer(producer);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<Studios> parseStudios(String studiosRecord) {
+        return Arrays.stream(studiosRecord.split("\\band\\b|,"))
+                .map(String::trim)
+                .map(name -> {
+                    Studios studios = new Studios();
+                    studios.setName(name);
+                    return getOrCreateStudios(studios);
+                })
+                .collect(Collectors.toList());
     }
 
     private Studios getOrCreateStudios(Studios studios) {
