@@ -26,40 +26,37 @@ public class ProducerService {
 
         List<ProducerIntervalResponseDto> producersWithMinInterval = new ArrayList<>();
         List<ProducerIntervalResponseDto> producersWithMaxInterval = new ArrayList<>();
+        int minReleaseYearsInteval = Integer.MAX_VALUE;
+        int maxReleaseYearsInteval = 0;
 
         for (Producer producer : producers) {
             List<Movie> movies = movieRepository.findByProducerIdAndWinner(producer.getId(), true);
 
-            // Get the films that the producers won more than once
             if (movies.size() >= 2) {
-                List<Integer> sortedReleaseYears = movies
-                        .stream()
+                List<Integer> sortedReleaseYears = movies.stream()
                         .map(Movie::getReleaseYear)
                         .sorted()
                         .collect(Collectors.toList());
 
-                int minInterval = Integer.MAX_VALUE;
-                int maxInterval = 0;
-
                 for (int i = 1; i < sortedReleaseYears.size(); i++) {
-                    int interval = sortedReleaseYears.get(i) - sortedReleaseYears.get(i - 1);
+                    int releaseYearsInteval = sortedReleaseYears.get(i) - sortedReleaseYears.get(i - 1);
 
-                    // Get producer with the shortest gap between two consecutive awards
-                    if (interval <= minInterval) {
-                        minInterval = interval;
-                        producersWithMinInterval.add(
-                                createProducerIntervalResponseDto(
-                                        producer.getName(), sortedReleaseYears.get(i - 1),
-                                        sortedReleaseYears.get(i), interval));
+                    // Update the shortest interval
+                    if (releaseYearsInteval <= minReleaseYearsInteval) {
+                        if (releaseYearsInteval < minReleaseYearsInteval) {
+                            minReleaseYearsInteval = releaseYearsInteval;
+                            producersWithMinInterval.clear();
+                        }
+                        producersWithMinInterval.add(createProducerIntervalResponseDto(producer.getName(), sortedReleaseYears.get(i - 1), sortedReleaseYears.get(i), releaseYearsInteval));
                     }
 
-                    // Get producer with the longest gap between two consecutive awards
-                    if (interval >= maxInterval) {
-                        maxInterval = interval;
-                        producersWithMaxInterval.add(
-                                createProducerIntervalResponseDto(
-                                        producer.getName(), sortedReleaseYears.get(i - 1),
-                                        sortedReleaseYears.get(i), interval));
+                    // Update the longest interval
+                    if (releaseYearsInteval >= maxReleaseYearsInteval) {
+                        if (releaseYearsInteval > maxReleaseYearsInteval) {
+                            maxReleaseYearsInteval = releaseYearsInteval;
+                            producersWithMaxInterval.clear();
+                        }
+                        producersWithMaxInterval.add(createProducerIntervalResponseDto(producer.getName(), sortedReleaseYears.get(i - 1), sortedReleaseYears.get(i), releaseYearsInteval));
                     }
                 }
             }

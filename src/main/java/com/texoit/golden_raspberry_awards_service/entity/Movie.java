@@ -31,7 +31,7 @@ public class Movie {
     private List<Studios> studios;
 
     @ManyToMany
-    private List<Producer> producer;
+    private List<Producer> producers;
 
     @Column(name = "winner")
     private boolean winner;
