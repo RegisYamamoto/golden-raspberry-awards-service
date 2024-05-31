@@ -6,27 +6,28 @@ import com.texoit.golden_raspberry_awards_service.entity.Producer;
 import com.texoit.golden_raspberry_awards_service.repository.MovieRepository;
 import com.texoit.golden_raspberry_awards_service.repository.ProducerRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
-public class ProducerServiceIntegrationTest {
+@ExtendWith(MockitoExtension.class)
+public class ProducerServiceTest {
 
-    @Autowired
-    private ProducerService producerService;
-
-    @MockBean
+    @Mock
     private ProducerRepository producerRepository;
 
-    @MockBean
+    @Mock
     private MovieRepository movieRepository;
+
+    @InjectMocks
+    private ProducerService producerService;
 
     private static final boolean IS_WINNER = true;
 
