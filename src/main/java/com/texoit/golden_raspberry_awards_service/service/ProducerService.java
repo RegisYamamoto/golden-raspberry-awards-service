@@ -21,6 +21,8 @@ public class ProducerService {
     @Autowired
     private ProducerRepository producerRepository;
 
+    private static final boolean IS_WINNER = true;
+
     public ProducerResponseDto getProducerWithTheLongestAndShortestGapBetweenTwoConsecutiveAwards() {
         List<Producer> producers = producerRepository.findAll();
 
@@ -30,7 +32,7 @@ public class ProducerService {
         int maxReleaseYearsInteval = 0;
 
         for (Producer producer : producers) {
-            List<Movie> movies = movieRepository.findByProducerIdAndWinner(producer.getId(), true);
+            List<Movie> movies = movieRepository.findByProducerIdAndWinner(producer.getId(), IS_WINNER);
 
             if (movies.size() >= 2) {
                 List<Integer> sortedReleaseYears = movies.stream()
