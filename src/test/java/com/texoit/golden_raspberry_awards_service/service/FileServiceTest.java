@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
-public class FileServiceIntegrationTest {
+public class FileServiceTest {
 
     @Mock
     private StudiosRepository studiosRepository;
