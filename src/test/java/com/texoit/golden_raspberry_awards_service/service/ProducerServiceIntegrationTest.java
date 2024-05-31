@@ -47,16 +47,26 @@ public class ProducerServiceIntegrationTest {
 
         Movie movie2 = new Movie();
         movie1.setProducers(Collections.singletonList(producer1));
-        movie2.setReleaseYear(2005);
+        movie2.setReleaseYear(2001);
         movie2.setWinner(true);
 
+        Producer producer2 = new Producer();
+        producer2.setId(2L);
+        producer2.setName("Producer 2");
+
         Movie movie3 = new Movie();
-        movie1.setProducers(Collections.singletonList(producer1));
+        movie3.setProducers(Collections.singletonList(producer2));
         movie3.setReleaseYear(2010);
         movie3.setWinner(true);
 
-        Mockito.when(producerRepository.findAll()).thenReturn(Collections.singletonList(producer1));
-        Mockito.when(movieRepository.findByProducerIdAndWinner(1L, true)).thenReturn(Arrays.asList(movie1, movie2, movie3));
+        Movie movie4 = new Movie();
+        movie4.setProducers(Collections.singletonList(producer2));
+        movie4.setReleaseYear(2015);
+        movie4.setWinner(true);
+
+        Mockito.when(producerRepository.findAll()).thenReturn(Arrays.asList(producer1, producer2));
+        Mockito.when(movieRepository.findByProducerIdAndWinner(1L, true)).thenReturn(Arrays.asList(movie1, movie2));
+        Mockito.when(movieRepository.findByProducerIdAndWinner(2L, true)).thenReturn(Arrays.asList(movie3, movie4));
 
         // Act
         ProducerResponseDto responseDto = producerService.getProducerWithTheLongestAndShortestGapBetweenTwoConsecutiveAwards();
@@ -65,12 +75,12 @@ public class ProducerServiceIntegrationTest {
         assertEquals(1, responseDto.getMin().size());
         assertEquals(1, responseDto.getMax().size());
         assertEquals("Producer 1", responseDto.getMin().get(0).getProducer());
+        assertEquals(1, responseDto.getMin().get(0).getInterval());
         assertEquals(2000, responseDto.getMin().get(0).getPreviousWin());
-        assertEquals(2005, responseDto.getMin().get(0).getFollowingWin());
-        assertEquals(5, responseDto.getMin().get(0).getInterval());
-        assertEquals("Producer 1", responseDto.getMax().get(0).getProducer());
-        assertEquals(2005, responseDto.getMax().get(0).getPreviousWin());
-        assertEquals(2010, responseDto.getMax().get(0).getFollowingWin());
+        assertEquals(2001, responseDto.getMin().get(0).getFollowingWin());
+        assertEquals("Producer 2", responseDto.getMax().get(0).getProducer());
+        assertEquals(2010, responseDto.getMax().get(0).getPreviousWin());
+        assertEquals(2015, responseDto.getMax().get(0).getFollowingWin());
         assertEquals(5, responseDto.getMax().get(0).getInterval());
     }
 }
