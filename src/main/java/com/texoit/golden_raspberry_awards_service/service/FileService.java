@@ -80,17 +80,6 @@ public class FileService {
         return movie;
     }
 
-    private List<Producer> parseProducers(String producersRecord) {
-        return Arrays.stream(producersRecord.split("\\band\\b|,"))
-                .map(String::trim)
-                .map(name -> {
-                    Producer producer = new Producer();
-                    producer.setName(name);
-                    return getOrCreateProducer(producer);
-                })
-                .collect(Collectors.toList());
-    }
-
     private List<Studio> parseStudios(String studiosRecord) {
         return Arrays.stream(studiosRecord.split("\\band\\b|,"))
                 .map(String::trim)
@@ -98,6 +87,17 @@ public class FileService {
                     Studio studio = new Studio();
                     studio.setName(name);
                     return getOrCreateStudios(studio);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<Producer> parseProducers(String producersRecord) {
+        return Arrays.stream(producersRecord.split("\\band\\b|,"))
+                .map(String::trim)
+                .map(name -> {
+                    Producer producer = new Producer();
+                    producer.setName(name);
+                    return getOrCreateProducer(producer);
                 })
                 .collect(Collectors.toList());
     }
