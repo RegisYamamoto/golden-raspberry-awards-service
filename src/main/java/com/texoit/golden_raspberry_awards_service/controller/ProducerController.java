@@ -27,10 +27,4 @@ public class ProducerController {
         ProducerResponseDto producerResponseDto = producerService.getProducerWithTheLongestAndShortestGapBetweenTwoConsecutiveAwards();
         return ResponseEntity.status(HttpStatus.OK).body(producerResponseDto);
     }
-
-    @GetMapping(value = "/test")
-    public ResponseEntity<List<Movie>> test() {
-        List<Movie> all = movieRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(all);
-    }
 }
