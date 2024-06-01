@@ -32,7 +32,7 @@ public class ProducerService {
         int maxReleaseYearsInteval = 0;
 
         for (Producer producer : producers) {
-            List<Movie> movies = movieRepository.findByProducerIdAndWinner(producer.getId(), IS_WINNER);
+            List<Movie> movies = movieRepository.findByProducersIdAndWinner(producer.getId(), IS_WINNER);
 
             if (movies.size() >= 2) {
                 List<Integer> sortedReleaseYears = movies.stream()

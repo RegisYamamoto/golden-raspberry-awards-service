@@ -63,8 +63,8 @@ public class ProducerServiceTest {
         movie4.setWinner(true);
 
         Mockito.when(producerRepository.findAll()).thenReturn(Arrays.asList(producer1, producer2));
-        Mockito.when(movieRepository.findByProducerIdAndWinner(1L, IS_WINNER)).thenReturn(Arrays.asList(movie1, movie2));
-        Mockito.when(movieRepository.findByProducerIdAndWinner(2L, IS_WINNER)).thenReturn(Arrays.asList(movie3, movie4));
+        Mockito.when(movieRepository.findByProducersIdAndWinner(1L, IS_WINNER)).thenReturn(Arrays.asList(movie1, movie2));
+        Mockito.when(movieRepository.findByProducersIdAndWinner(2L, IS_WINNER)).thenReturn(Arrays.asList(movie3, movie4));
 
         // Act
         ProducerResponseDto responseDto = producerService.getProducerWithTheLongestAndShortestGapBetweenTwoConsecutiveAwards();
@@ -115,8 +115,8 @@ public class ProducerServiceTest {
         movie4.setWinner(true);
 
         Mockito.when(producerRepository.findAll()).thenReturn(Arrays.asList(producer1, producer2));
-        Mockito.when(movieRepository.findByProducerIdAndWinner(1L, IS_WINNER)).thenReturn(Arrays.asList(movie1, movie2));
-        Mockito.when(movieRepository.findByProducerIdAndWinner(2L, IS_WINNER)).thenReturn(Arrays.asList(movie3, movie4));
+        Mockito.when(movieRepository.findByProducersIdAndWinner(1L, IS_WINNER)).thenReturn(Arrays.asList(movie1, movie2));
+        Mockito.when(movieRepository.findByProducersIdAndWinner(2L, IS_WINNER)).thenReturn(Arrays.asList(movie3, movie4));
 
         // Act
         ProducerResponseDto responseDto = producerService.getProducerWithTheLongestAndShortestGapBetweenTwoConsecutiveAwards();
@@ -175,7 +175,7 @@ public class ProducerServiceTest {
         movie1.setWinner(true);
 
         Mockito.when(producerRepository.findAll()).thenReturn(Collections.singletonList(producer1));
-        Mockito.when(movieRepository.findByProducerIdAndWinner(1L, IS_WINNER)).thenReturn(Collections.singletonList(movie1));
+        Mockito.when(movieRepository.findByProducersIdAndWinner(1L, IS_WINNER)).thenReturn(Collections.singletonList(movie1));
 
         // Act
         ProducerResponseDto responseDto = producerService.getProducerWithTheLongestAndShortestGapBetweenTwoConsecutiveAwards();

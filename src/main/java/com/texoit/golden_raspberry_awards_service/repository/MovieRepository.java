@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
-    public List<Movie> findByProducerIdAndWinner(Long id, boolean winner);
+    public List<Movie> findByProducersIdAndWinner(Long id, boolean winner);
 }
